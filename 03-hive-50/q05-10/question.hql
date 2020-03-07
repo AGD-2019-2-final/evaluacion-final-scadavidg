@@ -1,8 +1,8 @@
--- 
+--
 -- Pregunta
 -- ===========================================================================
 --
--- Realice una consulta que compute la cantidad de veces que aparece cada valor 
+-- Realice una consulta que compute la cantidad de veces que aparece cada valor
 -- de la columna `t0.c5`  por año.
 --
 -- Escriba el resultado a la carpeta `output` de directorio de trabajo.
@@ -13,10 +13,10 @@ CREATE TABLE tbl0 (
     c2 STRING,
     c3 INT,
     c4 DATE,
-    c5 ARRAY<CHAR(1)>, 
+    c5 ARRAY<CHAR(1)>,
     c6 MAP<STRING, INT>
 )
-ROW FORMAT DELIMITED 
+ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 COLLECTION ITEMS TERMINATED BY ':'
 MAP KEYS TERMINATED BY '#'
@@ -30,7 +30,7 @@ CREATE TABLE tbl1 (
     c3 STRING,
     c4 MAP<STRING, INT>
 )
-ROW FORMAT DELIMITED 
+ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 COLLECTION ITEMS TERMINATED BY ':'
 MAP KEYS TERMINATED BY '#'
@@ -39,4 +39,12 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+DROP TABLE IF EXISTS res;
+CREATE TABLE res AS SELECT YEAR(c4), letters, COUNT(letters)
+                    FROM tbl0 LATERAL VIEW explode(c5) tbl0 AS letters
+                    GROUP BY YEAR(c4), letters;
 
+INSERT OVERWRITE LOCAL DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+SELECT * FROM res;

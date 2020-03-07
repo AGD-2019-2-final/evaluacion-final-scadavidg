@@ -88,26 +88,26 @@ def compute_weights():
 
 def compute_grades(course_grade):
 
-    def compute(data):
+    def compute(datos):
 
-        if  not isinstance(data['tree'], dict):
+        if  not isinstance(datos['tree'], dict):
 
-            data['_grade'] = data['tree']
+            datos['_grade'] = datos['tree']
 
         else:
 
-            for key in data['tree'].keys():
-                data['tree'][key] = compute(data['tree'][key])
+            for key in datos['tree'].keys():
+                datos['tree'][key] = compute(datos['tree'][key])
 
-            total_score = sum([data['tree'][key]['_score']  for key in data['tree'].keys()])
+            total_score = sum([datos['tree'][key]['_score']  for key in datos['tree'].keys()])
 
             grade = 0.0
-            for key in data['tree'].keys():
-                grade += data['tree'][key]['_grade'] *  data['tree'][key]['_score'] / total_score
+            for key in datos['tree'].keys():
+                grade += datos['tree'][key]['_grade'] *  datos['tree'][key]['_score'] / total_score
             
-            data['_grade'] = round(grade, 2)
+            datos['_grade'] = round(grade, 2)
 
-        return data
+        return datos
 
     return compute(course_grade)
 

@@ -54,7 +54,7 @@ def run_answer():
     #----------------------------------------------------------------------------------------------
     # Ejecuta el código del estudiante
     #----------------------------------------------------------------------------------------------
-    result = os.popen('cat data.csv | python3 mapper.py | sort |  python3 reducer.py').read()
+    result = os.popen('cat datos.csv | python3 mapper.py | sort |  python3 reducer.py').read()
     print(result)
 
 #--------------------------------------------------------------------------------------------------

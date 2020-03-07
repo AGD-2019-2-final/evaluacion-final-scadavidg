@@ -1,9 +1,9 @@
--- 
+--
 -- Pregunta
 -- ===========================================================================
 --
--- Escriba una consulta que retorne para cada valor único de la columna `t0.c2`, 
--- los valores correspondientes de la columna `t0.c1`. 
+-- Escriba una consulta que retorne para cada valor único de la columna `t0.c2`,
+-- los valores correspondientes de la columna `t0.c1`.
 --
 -- Escriba el resultado a la carpeta `output` de directorio de trabajo.
 --
@@ -13,10 +13,10 @@ CREATE TABLE tbl0 (
     c2 STRING,
     c3 INT,
     c4 DATE,
-    c5 ARRAY<CHAR(1)>, 
+    c5 ARRAY<CHAR(1)>,
     c6 MAP<STRING, INT>
 )
-ROW FORMAT DELIMITED 
+ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 COLLECTION ITEMS TERMINATED BY ':'
 MAP KEYS TERMINATED BY '#'
@@ -30,7 +30,7 @@ CREATE TABLE tbl1 (
     c3 STRING,
     c4 MAP<STRING, INT>
 )
-ROW FORMAT DELIMITED 
+ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 COLLECTION ITEMS TERMINATED BY ':'
 MAP KEYS TERMINATED BY '#'
@@ -40,4 +40,12 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
 
+DROP TABLE IF EXISTS res;
+CREATE TABLE res AS SELECT c2, concat_ws(':',COLLECT_LIST(cast(c1 as STRING))) c1
+                    FROM tbl0
+                    GROUP BY c2;
 
+INSERT OVERWRITE LOCAL DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+SELECT * FROM res;

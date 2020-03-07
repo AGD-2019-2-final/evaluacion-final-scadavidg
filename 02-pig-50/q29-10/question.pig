@@ -1,12 +1,12 @@
--- 
+--
 -- Pregunta
 -- ===========================================================================
--- 
--- Para responder la pregunta use el archivo `data.csv`.
--- 
--- Escriba el código en Pig para manipulación de fechas que genere la siguiente 
+--
+-- Para responder la pregunta use el archivo `datos.csv`.
+--
+-- Escriba el código en Pig para manipulación de fechas que genere la siguiente
 -- salida.
--- 
+--
 --    1971-07-08,jul,07,7
 --    1974-05-23,may,05,5
 --    1973-04-22,abr,04,4
@@ -25,18 +25,39 @@
 --    1974-02-11,feb,02,2
 --    1973-04-01,abr,04,4
 --    1973-04-29,abr,04,4
--- 
+--
 -- Escriba el resultado a la carpeta `output` del directorio actual.
--- 
+--
 fs -rm -f -r output;
--- 
-u = LOAD 'data.csv' USING PigStorage(',') 
-    AS (id:int, 
-        firstname:CHARARRAY, 
-        surname:CHARARRAY, 
-        birthday:CHARARRAY, 
-        color:CHARARRAY, 
-        quantity:INT);
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+fs -rm *.csv --ejecutar para bajar el ultimo archivo cargado al hadoop
+fs -put data.csv
+datos = LOAD 'data.csv' USING PigStorage(',')
+    AS (id:int, firstname:CHARARRAY,surname:CHARARRAY,birthday:CHARARRAY,
+        color:CHARARRAY,quantity:INT);
+
+fechas = FOREACH datos GENERATE birthday,ToDate(birthday,'yyyy-MM-dd') AS bdate;
+fechas = FOREACH fechas GENERATE birthday,CASE ToString(bdate,'MM')
+                                WHEN '01' THEN 'ene'
+                                WHEN '02' THEN 'feb'
+                                WHEN '03' THEN 'mar'
+                                WHEN '04' THEN 'abr'
+                                WHEN '05' THEN 'may'
+                                WHEN '06' THEN 'jun'
+                                WHEN '07' THEN 'jul'
+                                WHEN '08' THEN 'ago'
+                                WHEN '09' THEN 'sep'
+                                WHEN '10' THEN 'oct'
+                                WHEN '11' THEN 'nov'
+                                WHEN '12' THEN 'dic'
+                                END,ToString(bdate,'MM'),ToString(bdate,'M');
+
+
+
+STORE fechas INTO 'output' USING PigStorage(',');
+fs -get output/.
+
+
+
